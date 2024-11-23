@@ -46,4 +46,7 @@ class PlaylistAdmin(admin.ModelAdmin):
     class Meta:
         model = Playlist
 
+    def get_queryset(self, request):
+        return Playlist.objects.filter(type=Playlist.PlaylistTypeChoices.PLAYLIST)
+
 admin.site.register(Playlist, PlaylistAdmin)
