@@ -42,7 +42,7 @@ class Video(models.Model):
         return self.active
 
     def get_playlist_ids(self):
-        return list(self.playlists.all().values_list('id', flat=True))
+        return list(self.playlist_featured.all().values_list('id', flat=True))
 
 
 

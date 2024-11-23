@@ -22,7 +22,7 @@ class PlaylistModelTestCase(TestCase):
         self.assertEqual(self.obj_a.video, self.video_a)
 
     def test_video_playlist(self):
-        qs = self.video_a.playlists.all()
+        qs = self.video_a.playlist_featured .all()
         self.assertEqual(qs.count(), 2)
 
     def test_slug_field(self):
