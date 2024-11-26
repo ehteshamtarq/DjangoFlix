@@ -36,7 +36,7 @@ class Playlist(models.Model):
                             choices=PlaylistTypeChoices.choices,
                             default=PlaylistTypeChoices.PLAYLIST)
     description =  models.TextField(blank = True, null = True)
-    slug = models.SlugField(blank = True, null = True)
+    slug = models.SlugField(blank = True, null  = True)
     video = models.ForeignKey(Video, blank=True, null=True, on_delete=models.SET_NULL, related_name='playlist_featured')
     videos = models.ManyToManyField(Video, blank=True,
                                     related_name='playlist_item',
@@ -66,6 +66,24 @@ pre_save.connect(publish_state_pre_save, sender = Playlist)
 pre_save.connect(slugify_pre_save, sender = Playlist)
 
 
+class MovieProxyManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(type=Playlist.PlaylistTypeChoices.MOVIE)
+
+class MovieProxy(Playlist):
+
+    objects = MovieProxyManager()
+
+    class Meta:
+        verbose_name = 'Movie'
+        verbose_name_plural = 'Movies'
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.type = Playlist.PlaylistTypeChoices.MOVIE
+        super().save(*args, **kwargs)
+
+
 class TVShowProxyManager(PlaylistManager):
     def all(self):
         return self.get_queryset().filter(parent__isnull=True,
@@ -75,12 +93,15 @@ class TVShowProxy(Playlist):
 
     objects = TVShowProxyManager()
 
-
-
     class Meta:
         verbose_name = 'TV Show'
         verbose_name_plural = 'TV Shows'
         proxy = True
+
+    def save(self, *args, **kwargs):
+        self.type = Playlist.PlaylistTypeChoices.SHOW
+        super().save(*args, **kwargs)
+
 
 class TVShowSeasonProxyManager(PlaylistManager):
     def all(self):
@@ -96,6 +117,11 @@ class TVShowSeasonProxy(Playlist):
         verbose_name = 'Season'
         verbose_name_plural = 'Seasons'
         proxy=True
+
+    def save(self, *args, **kwargs):
+        self.type = Playlist.PlaylistTypeChoices.SHOW
+        super().save(*args, **kwargs)
+
 
 class PlaylistItem(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)

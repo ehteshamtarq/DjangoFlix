@@ -2,7 +2,17 @@ from django.contrib import admin
 from django.contrib.admin import TabularInline
 
 # Register your models here.
-from .models import  TVShowProxy, TVShowSeasonProxy, Playlist, PlaylistItem
+from .models import  MovieProxy, TVShowProxy, TVShowSeasonProxy, Playlist, PlaylistItem
+
+class MovieProxyAdmin(admin.ModelAdmin):
+    list_display = ['title']
+    fields = ['title', 'description', 'state', 'video', 'slug']
+    class Meta:
+        model = MovieProxy
+    def get_queryset(self, request):
+        return MovieProxy.objects.all()
+
+admin.site.register(MovieProxy, MovieProxyAdmin)
 
 class SeasonEpisodeInline(admin.TabularInline):
     model = PlaylistItem
